@@ -29,7 +29,7 @@ DeepSeek改了代码
 - **声明与规则**：软件声明 + 抽卡规则摘要
 - **仓库统计**：每位干员的获取次数与出率、综合出率、资源与道具合计
 - **角色图鉴**：33名干员列表（按星级着色）+ **窗口内立绘预览**，可调用系统看图或打开 fz.wiki 页面
-- **注意**：此版本依赖于下方**控制台版**！！！
+- **注意**：此版本*编译*依赖于下方**控制台版**！！！
 
 ### 控制台版 EndfieldGacha.exe
 
@@ -80,6 +80,8 @@ g++ -O2 -std=gnu++17 -finput-charset=UTF-8 -mwindows -o EndfieldGachaGUI.exe End
 1、~~更新图形化界面~~（已完成）
 2、添加存档功能
 
-
+# 声明
+卡池信息来源于 https://end.canmoe.com/zh-CN/banner-calendar
+角色信息及立绘来源自公开Wiki https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98
 
 爱写作业的好汉 2026.10.5
