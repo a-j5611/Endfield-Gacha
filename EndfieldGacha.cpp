@@ -773,7 +773,8 @@ pair<int,int> gacha()
         result_stars = 6;
         stars6_small_baseline = 80;
     }
-    stars6_big_baseline -= 1;
+    if (stars6_big_baseline > 0)
+        stars6_big_baseline -= 1;//已消耗(0)后不再递减为负数，便于界面显示
     stars6_small_baseline -= 1;
     stars5_baseline -= 1;
     if (result_stars == 6)
@@ -849,35 +850,192 @@ pair<int,int> urgent_gacha(int& five_guard)
 }
 
 //更新修改
-//执行一次加急招募（免费十连）并计入已获得角色
-void DoUrgentRecruit()
+//内核：供控制台版与图形界面版共用的抽卡接口
+//寻访输出项：type 0=寻访结果 1=加急招募结果 2=文字消息
+struct GachaItem
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    cout << "\n获得加急招募10次（免费十连，结果不计入保底计数与累计寻访次数）：\n";
+    int type;
+    int stars;
+    string text;
+};
+
+//按星级与下标取角色名
+string CharacterName(int stars, int index)
+{
+    if (stars == 6)
+        return stars6[index];
+    if (stars == 5)
+        return stars5[index];
+    return stars4[index];
+}
+
+//执行一次加急招募（免费十连）：不计入保底计数与累计寻访次数
+vector<pair<int,int> > DrawUrgentRecruit()
+{
+    vector<pair<int,int> > out;
     int five_guard = 0;
     for (int i = 1; i <= 10; i++)
     {
         pair<int, int> a = urgent_gacha(five_guard);
-        string name;
-        if (a.first == 6)
+        owned[CharacterName(a.first, a.second)]++;
+        out.push_back(a);
+    }
+    return out;
+}
+
+//文字消息
+void PushMessage(vector<GachaItem>& out, const string& text)
+{
+    GachaItem it;
+    it.type = 2;
+    it.stars = 0;
+    it.text = text;
+    out.push_back(it);
+}
+
+//寻访结果
+void PushPull(vector<GachaItem>& out, int type, int i, const pair<int,int>& a)
+{
+    GachaItem it;
+    it.type = type;
+    it.stars = a.first;
+    it.text = "第" + to_string(i) + "抽：" + (a.first == 6 ? "6星 " : (a.first == 5 ? "5星 " : "4星 ")) + CharacterName(a.first, a.second);
+    out.push_back(it);
+}
+
+//加急招募（消息+10次结果）
+void PushUrgentRecruit(vector<GachaItem>& out)
+{
+    PushMessage(out, "\n获得加急招募10次（免费十连，结果不计入保底计数与累计寻访次数）：");
+    vector<pair<int,int> > a = DrawUrgentRecruit();
+    for (size_t i = 0; i < a.size(); i++)
+        PushPull(out, 1, (int)i + 1, a[i]);
+}
+
+//执行一次批量寻访（含里程碑奖励、加急招募与信物赠礼），按顺序返回输出项
+vector<GachaItem> DoBatchPull(int times)
+{
+    vector<GachaItem> out;
+    g_count += times;
+    for (int i = 1; i <= times; i++)
+    {
+        pair<int, int> a = gacha();
+        owned[CharacterName(a.first, a.second)]++;
+        PushPull(out, 0, i, a);
+    }
+    //寻访里程碑奖励（常驻池无此类奖励）
+    if (up_stars6_count > 0)
+    {
+        if (banner_pulls >= 30 && !milestone_30)
         {
-            SetConsoleTextAttribute(hConsole, 6);
-            name = stars6[a.second];
+            milestone_30 = true;
+            PushUrgentRecruit(out);
         }
-        else if (a.first == 5)
+        if (banner_type == 3)
         {
-            SetConsoleTextAttribute(hConsole, 14);
-            name = stars5[a.second];
+            //重构寻访：累计30/60/90次分别额外获得1次免费十连
+            if (banner_pulls >= 60 && !milestone_60)
+            {
+                milestone_60 = true;
+                PushUrgentRecruit(out);
+            }
+            if (banner_pulls >= 90 && !milestone_90)
+            {
+                milestone_90 = true;
+                PushUrgentRecruit(out);
+            }
+        }
+        else if (banner_type == 2)
+        {
+            //特殊寻访（辉光庆典）：60次基础寻访凭证×10，120次自选调用凭证×1
+            if (banner_pulls >= 60 && !milestone_60)
+            {
+                milestone_60 = true;
+                PushMessage(out, "累计寻访达60次，获得【基础寻访凭证】×10");
+            }
+            if (banner_pulls >= 120 && !milestone_120)
+            {
+                milestone_120 = true;
+                select_voucher++;
+                PushMessage(out, "累计寻访达120次，获得【流光庆时调用凭证】×1（可从莱万汀/洁尔佩塔/艾尔黛拉/骏卫中自选一名干员获取）");
+            }
         }
         else
         {
-            SetConsoleTextAttribute(hConsole, 13);
-            name = stars4[a.second];
+            //特许寻访：60次获得寻访情报书（下一次特许寻访开启后自动转化为10张专有寻访凭证）
+            if (banner_pulls >= 60 && !milestone_60)
+            {
+                milestone_60 = true;
+                intel_book++;
+                PushMessage(out, "累计寻访达60次，获得【寻访情报书】×1（将在下一次特许寻访开启后自动转化为10张专有寻访凭证）");
+            }
         }
-        owned[name]++;
-        cout << "第" << i << "抽："<< (a.first == 6 ? "6星 " : (a.first == 5 ? "5星 " : "4星 "))<< name <<'\n';
     }
-    SetConsoleTextAttribute(hConsole, 7);
+    //信物赠礼统计（每累计寻访240次获得1个，按1潜能计入角色获取次数）
+    int l = 0;
+    for(int i = 0;i < up_stars6_count;i++)
+    {
+        l += token[i];
+        owned[stars6[i]] += token[i];
+        token[i] = 0;
+    }
+    PushMessage(out, "本次获得当期UP干员信物" + to_string(l) + "个");
+    if (token_special > 0)
+    {
+        PushMessage(out, "本次获得【流光庆时信物补给】×" + to_string(token_special) + "（可从莱万汀/洁尔佩塔/艾尔黛拉/骏卫的信物中自选，需已拥有对应干员）");
+        token_special = 0;
+    }
+    return out;
+}
+
+//武库配额折算（每获得1名干员：6星2000、5星200、4星20）
+long long CalcWeaponQuota()
+{
+    long long sum = 0;
+    for (const auto& name : ALL_STARS6)
+    {
+        auto it = owned.find(name);
+        if (it != owned.end())
+            sum += (long long)it->second * 2000;
+    }
+    for (const auto& name : ALL_STARS5)
+    {
+        auto it = owned.find(name);
+        if (it != owned.end())
+            sum += (long long)it->second * 200;
+    }
+    for (const auto& name : ALL_STARS4)
+    {
+        auto it = owned.find(name);
+        if (it != owned.end())
+            sum += (long long)it->second * 20;
+    }
+    return sum;
+}
+
+//更新修改
+//以可执行文件所在目录为基准拼接立绘路径（窄字符，控制台用；避免工作目录不同导致ShellExecute返回5）
+string GetImagePath(const string& english)
+{
+    char exePath[MAX_PATH] = {0};
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    string path = exePath;
+    size_t pos = path.find_last_of("\\/");
+    if (pos != string::npos)
+        path = path.substr(0, pos + 1);
+    return path + "CharacterImages\\" + english + ".jpg";
+}
+
+//以可执行文件所在目录为基准拼接立绘路径（宽字符，图形界面用）
+wstring GetImagePathW(const wstring& english)
+{
+    wchar_t exePath[MAX_PATH] = {0};
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    wstring path = exePath;
+    size_t pos = path.find_last_of(L"\\/");
+    if (pos != wstring::npos)
+        path = path.substr(0, pos + 1);
+    return path + L"CharacterImages\\" + english + L".jpg";
 }
 
 void GachaMain()
@@ -975,92 +1133,22 @@ void GachaMain()
                 Sleep(1500);
                 continue;
             }
-            g_count += g;
-            cout << "\n抽卡中……\n";
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-            for (int i = 1; i <= g; i++) {
-                pair<int, int> a = gacha();
-                string name;
-                if (a.first == 6)
-                {
-                    SetConsoleTextAttribute(hConsole, 6);   // 暗黄色(橙色)
-                    name = stars6[a.second];
-                }
-                else if (a.first == 5)
-                {
-                    SetConsoleTextAttribute(hConsole, 14);  // 亮黄色(金色)
-                    name = stars5[a.second];
-                }
-                else if (a.first == 4) 
-                {
-                    SetConsoleTextAttribute(hConsole, 13);  // 亮紫色
-                    name = stars4[a.second];
-                }
-                owned[name]++;
-                cout << "第" << i << "抽："<< (a.first == 6 ? "6星 " : (a.first == 5 ? "5星 " : "4星 "))<< name <<'\n';
-            }
             //更新修改
-            //寻访里程碑奖励（常驻池无此类奖励）
-            if (up_stars6_count > 0)
+            //统一调用抽卡内核：保底、里程碑奖励、加急招募与信物赠礼均在内核中处理
+            cout << "\n抽卡中……\n";
+            vector<GachaItem> items = DoBatchPull(g);
+            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+            for (size_t k = 0; k < items.size(); k++)
             {
-                if (banner_pulls >= 30 && !milestone_30)
-                {
-                    milestone_30 = true;
-                    DoUrgentRecruit();
-                }
-                if (banner_type == 3)
-                {
-                    //重构寻访：累计30/60/90次分别额外获得1次免费十连
-                    if (banner_pulls >= 60 && !milestone_60)
-                    {
-                        milestone_60 = true;
-                        DoUrgentRecruit();
-                    }
-                    if (banner_pulls >= 90 && !milestone_90)
-                    {
-                        milestone_90 = true;
-                        DoUrgentRecruit();
-                    }
-                }
-                else if (banner_type == 2)
-                {
-                    //特殊寻访（辉光庆典）：60次基础寻访凭证×10，120次自选调用凭证×1
-                    if (banner_pulls >= 60 && !milestone_60)
-                    {
-                        milestone_60 = true;
-                        cout << "累计寻访达60次，获得【基础寻访凭证】×10\n";
-                    }
-                    if (banner_pulls >= 120 && !milestone_120)
-                    {
-                        milestone_120 = true;
-                        select_voucher++;
-                        cout << "累计寻访达120次，获得【流光庆时调用凭证】×1（可从莱万汀/洁尔佩塔/艾尔黛拉/骏卫中自选一名干员获取）\n";
-                    }
-                }
+                if (items[k].type == 2)
+                    SetConsoleTextAttribute(hConsole, 7);        // 文字消息
+                else if (items[k].stars == 6)
+                    SetConsoleTextAttribute(hConsole, 6);        // 暗黄色(橙色)
+                else if (items[k].stars == 5)
+                    SetConsoleTextAttribute(hConsole, 14);       // 亮黄色(金色)
                 else
-                {
-                    //特许寻访：60次获得寻访情报书（下一次特许寻访开启后自动转化为10张专有寻访凭证）
-                    if (banner_pulls >= 60 && !milestone_60)
-                    {
-                        milestone_60 = true;
-                        intel_book++;
-                        cout << "累计寻访达60次，获得【寻访情报书】×1（将在下一次特许寻访开启后自动转化为10张专有寻访凭证）\n";
-                    }
-                }
-            }
-            //信物赠礼统计（每累计寻访240次获得1个，按1潜能计入角色获取次数）
-            int l = 0;
-            for(int i = 0;i < up_stars6_count;i++)
-            {
-                l += token[i];
-                owned[stars6[i]] += token[i];
-                token[i] = 0;
-            }
-            cout <<"本次获得当期UP干员信物"<< l <<"个\n";
-            if (token_special > 0)
-            {
-                cout <<"本次获得【流光庆时信物补给】×"<< token_special <<"（可从莱万汀/洁尔佩塔/艾尔黛拉/骏卫的信物中自选，需已拥有对应干员）\n";
-                token_special = 0;
+                    SetConsoleTextAttribute(hConsole, 13);       // 亮紫色
+                cout << items[k].text << '\n';
             }
             SetConsoleTextAttribute(hConsole, 7);
             system("pause");
@@ -1078,7 +1166,7 @@ void ShowOwned() {
     if (owned.empty()) {
         cout << "仓库为空，快去抽卡吧！\n";
     } else {
-        weapon_p = 0;
+        weapon_p = CalcWeaponQuota();
         cout << "当前角色获取统计：\n";
         bool has6 = false;
         for (const auto& name : ALL_STARS6)
@@ -1091,7 +1179,6 @@ void ShowOwned() {
                     cout << "【6星】\n"; has6 = true;
                 cout << "  " << name << " × " << it->second <<"    出率："<< setprecision(4) << (double(it->second * 100) / double(g_count)) <<"%\n";
                 count_6stars += it->second;
-                weapon_p += it->second * 2000;
                 SetConsoleTextAttribute(hConsole, 7);
             }
         }
@@ -1106,7 +1193,6 @@ void ShowOwned() {
                     cout << "【5星】\n"; has5 = true;
                 cout << "  " << name << " × " << it->second <<"    出率："<< setprecision(4) << (double(it->second * 100) / double(g_count)) <<"%\n";
                 count_5stars += it->second;
-                weapon_p += it->second * 200;
                 SetConsoleTextAttribute(hConsole, 7);
             }
         }
@@ -1121,7 +1207,6 @@ void ShowOwned() {
                     cout << "【4星】\n"; has4 = true;
                 cout << "  " << name << " × " << it->second <<"    出率："<< setprecision(4) << (double(it->second * 100) / double(g_count)) <<"%\n";
                 count_4stars += it->second;
-                weapon_p += it->second * 20;
                 SetConsoleTextAttribute(hConsole, 7);
             }
         }
@@ -1154,19 +1239,6 @@ void ShowOwned() {
     cout <<"  【流光庆时调用凭证】 × "<< select_voucher <<"（可从莱万汀/洁尔佩塔/艾尔黛拉/骏卫中自选一名干员获取）\n";
     SetConsoleTextAttribute(hConsole, 7);
     system("pause");
-}
-
-//更新修改
-//以可执行文件所在目录为基准拼接立绘路径，避免因工作目录不同导致相对路径失效（ShellExecute会返回错误代码5）
-string GetImagePath(const string& english)
-{
-    char exePath[MAX_PATH] = {0};
-    GetModuleFileNameA(NULL, exePath, MAX_PATH);
-    string path = exePath;
-    size_t pos = path.find_last_of("\\/");
-    if (pos != string::npos)
-        path = path.substr(0, pos + 1);
-    return path + "CharacterImages\\" + english + ".jpg";
 }
 
 //更新修改
