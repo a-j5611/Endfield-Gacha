@@ -3,9 +3,9 @@
 # 终末地抽卡模拟器
 
 本项目相当之简陋（真的）
-~~只有终端，没有图形化（以后会更的）~~ → **现在有图形界面了！**
 
-DeepSeek改了代码
+原本是手搓的，后来改bug改疯了（真）
+所以找DeepSeek 改的代码（怒烧2千4百万token）
 
 
 
@@ -77,11 +77,9 @@ g++ -O2 -std=gnu++17 -finput-charset=UTF-8 -mwindows -o EndfieldGachaGUI.exe End
 
 ## 未来更新预期
 
-1、~~更新图形化界面~~（已完成）
-2、添加存档功能
+    添加存档功能
 
 # 声明
-卡池信息来源于 https://end.canmoe.com/zh-CN/banner-calendar
-角色信息及立绘来源自公开Wiki https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98
+卡池信息、角色信息及立绘来源自公开Wiki https://www.fz.wiki/
 
 爱写作业的好汉 2026.10.5
