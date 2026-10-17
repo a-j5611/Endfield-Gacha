@@ -76,7 +76,7 @@ int banner_type = 1;//0常驻 1特许寻访 2特殊寻访 3重构寻访
 const vector<string> ALL_STARS6 = {
     "莱万汀", "艾尔黛拉", "余烬", "黎风", "别礼", "骏卫",
     "洁尔佩塔", "伊冯", "汤汤", "洛茜", "庄方宜", "弭弗", "卡缪","诀","梨诺",
-    "提弗洛斯"
+    "提弗洛斯","祀"
 };
 const vector<string> ALL_STARS5 = {
     "阿列什", "大潘", "昼雪", "艾维文娜", "赛希",
@@ -91,7 +91,7 @@ const vector<string> ALL_STARS4 = {
 const vector<string> ALL_CHARACTERS = {
     //6星
     "莱万汀", "艾尔黛拉", "余烬", "黎风", "别礼", "骏卫","管理员-男","管理员-女",
-    "洁尔佩塔", "伊冯", "汤汤", "洛茜", "庄方宜", "弭弗", "卡缪","诀","梨诺","提弗洛斯",
+    "洁尔佩塔", "伊冯", "汤汤", "洛茜", "庄方宜", "弭弗", "卡缪","诀","梨诺","提弗洛斯","祀",
 
     //5星
     "阿列什", "大潘", "昼雪", "艾维文娜", "赛希",
@@ -106,7 +106,7 @@ const vector<string> ALL_CHARACTERS = {
 const vector<string> ENGLISH = {
     //6星
     "Laevatain", "Ardelia", "Ember", "Lifeng", "LastRite", "Pogranichnik","EndministratorMale","EndministratorFemale",
-    "Gilberta", "Yvonne", "Tangtang", "Rossi", "ZhuangFangyi", "Mifu", "Camille","Arcane","Liino","Typhoeus",
+    "Gilberta", "Yvonne", "Tangtang", "Rossi", "ZhuangFangyi", "Mifu", "Camille","Arcane","Liino","Typhoeus","none",
 
     //5星
     "Alesh", "DaPan", "Snowshine", "Avywenna", "Xaihi",
@@ -124,7 +124,7 @@ const vector<string> WEBSIDES = {
 
     "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%B4%81%E5%B0%94%E4%BD%A9%E5%A1%94","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E4%BC%8A%E5%86%AF","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%B1%A4%E6%B1%A4",
     "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%B4%9B%E8%8C%9C","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E5%BA%84%E6%96%B9%E5%AE%9C","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E5%BC%AD%E5%BC%97",
-    "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E5%8D%A1%E7%BC%AA","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E8%AF%80","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%A2%A8%E8%AF%BA","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%8F%90%E5%BC%97%E6%B4%9B%E6%96%AF",
+    "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E5%8D%A1%E7%BC%AA","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E8%AF%80","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%A2%A8%E8%AF%BA","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%8F%90%E5%BC%97%E6%B4%9B%E6%96%AF","none",
 
     "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E9%98%BF%E5%88%97%E4%BB%80","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E5%A4%A7%E6%BD%98","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E6%98%BC%E9%9B%AA",
     "https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E8%89%BE%E7%BB%B4%E6%96%87%E5%A8%9C","https://www.fz.wiki/wiki/%E5%B9%B2%E5%91%98/%E8%B5%9B%E5%B8%8C",
@@ -542,6 +542,34 @@ void SetSection(int section)
     {
         banner_type = 3;
         stars6.push_back("伊冯");
+        stars6.push_back("艾尔黛拉");
+        stars6.push_back("余烬");
+        stars6.push_back("黎风");
+        stars6.push_back("别礼");
+        stars6.push_back("骏卫");
+        stars6_count = 6;
+        up_stars6_count = 1;
+        stars5.push_back("阿列什");
+        stars5.push_back("大潘");
+        stars5.push_back("昼雪");
+        stars5.push_back("艾维文娜");
+        stars5.push_back("赛希");
+        stars5.push_back("弧光");
+        stars5.push_back("狼卫");
+        stars5.push_back("陈千语");
+        stars5.push_back("佩丽卡");
+        stars5_count = 9;
+        stars4.push_back("安塔尔");
+        stars4.push_back("萤石");
+        stars4.push_back("埃特拉");
+        stars4.push_back("卡契尔");
+        stars4.push_back("秋栗");
+        stars4_count = 5;
+    }
+    //1.6上半
+    if(section == 14)
+    {
+        stars6.push_back("祀");
         stars6.push_back("提弗洛斯");
         stars6.push_back("梨诺");
         stars6.push_back("艾尔黛拉");
@@ -550,6 +578,35 @@ void SetSection(int section)
         stars6.push_back("别礼");
         stars6.push_back("骏卫");
         stars6_count = 8;
+        up_stars6_count = 1;
+        stars5.push_back("阿列什");
+        stars5.push_back("大潘");
+        stars5.push_back("昼雪");
+        stars5.push_back("艾维文娜");
+        stars5.push_back("赛希");
+        stars5.push_back("弧光");
+        stars5.push_back("狼卫");
+        stars5.push_back("陈千语");
+        stars5.push_back("佩丽卡");
+        stars5_count = 9;
+        stars4.push_back("安塔尔");
+        stars4.push_back("萤石");
+        stars4.push_back("埃特拉");
+        stars4.push_back("卡契尔");
+        stars4.push_back("秋栗");
+        stars4_count = 5;
+    }
+    //1.6下半
+    if(section == 15)
+    {
+        banner_type = 3;
+        stars6.push_back("汤汤");
+        stars6.push_back("艾尔黛拉");
+        stars6.push_back("余烬");
+        stars6.push_back("黎风");
+        stars6.push_back("别礼");
+        stars6.push_back("骏卫");
+        stars6_count = 6;
         up_stars6_count = 1;
         stars5.push_back("阿列什");
         stars5.push_back("大潘");
@@ -646,6 +703,12 @@ bool AskSection(int version)
             cout <<"1.5上半  冬猎           提弗洛斯 2026.9.2~2026.9.30   12\n";
             cout <<"1.5下半  绚丽异彩       伊冯    2026.9.24~2026.10.15  13\n";
         }
+        //1.6版本
+        if(version == 7)
+        {
+            cout <<"1.6上半  万物更新       祀      2026.10.15~2026.11.5  14\n";
+            cout <<"1.6下半  祖泉的新流     汤汤    2026.10.29~2026.11.19 15\n";
+        }
         //常驻
         if(version == 999)
         {
@@ -668,6 +731,8 @@ bool AskSection(int version)
             valid = true;
         else if(version == 6 && (section == 12 || section == 13))
             valid = true;
+        else if(version == 7 && (section == 14 || section == 15))
+            valid = true;
         if (valid) {
             SetSection(section);
             return true;
@@ -687,12 +752,13 @@ bool AskVersion()
         system("cls");
         cout <<"请选择版本：\n";
         cout <<"版本 名称           时间                序号\n";
-        cout <<"1.0  零号委托       2026.1.22~2026.3.12 1\n";
-        cout <<"1.1  新潮起，故渊离 2026.3.12~2026.4.17 2\n";
-        cout <<"1.2  春晓时         2026.4.17~2026.6.4  3\n";
-        cout <<"1.3  寻遗散记       2026.6.5~2026.7.16  4\n";
-        cout <<"1.4  向渊行         2026.7.16~2026.9.2  5\n";
-        cout <<"1.5  雪凇幽梦       2026.9.2~2026.10.14 6\n";
+        cout <<"1.0  零号委托       2026.1.22~2026.3.12   1\n";
+        cout <<"1.1  新潮起，故渊离 2026.3.12~2026.4.17   2\n";
+        cout <<"1.2  春晓时         2026.4.17~2026.6.4    3\n";
+        cout <<"1.3  寻遗散记       2026.6.5~2026.7.16    4\n";
+        cout <<"1.4  向渊行         2026.7.16~2026.9.2    5\n";
+        cout <<"1.5  雪凇幽梦       2026.9.2~2026.10.14   6\n";
+        cout <<"1.6  丹青渡         2026.10.15~2026.11.19 7\n";
         cout <<"/    常驻池        /                   999\n";
         cout <<"选择版本（输入对应序号，返回上一级输入666）：";
         cin >> version;
@@ -703,7 +769,7 @@ bool AskVersion()
             SetSection(999);
             return true;
         }
-        if (version >= 1 && version <= 6)
+        if (version >= 1 && version <= 7)
         {
             if (!AskSection(version))
                 continue;
@@ -1254,7 +1320,8 @@ void ShowCharacterIllustration() {
 
         //更新修改
         //修改循环次数——————————
-        for (int i = 0; i < 18; i++)
+        //6星19人（含管理员男女）、5星10人、4星5人，合计34人
+        for (int i = 0; i < 19; i++)
         {
             SetConsoleTextAttribute(hConsole, 6);
             cout << idx << ". " << ALL_CHARACTERS[i] <<' '<< setw(100) << WEBSIDES[i] << endl;
@@ -1262,7 +1329,7 @@ void ShowCharacterIllustration() {
         }
         SetConsoleTextAttribute(hConsole, 7);
         cout << "【5星】\n";
-        for (int i = 18; i < 28; i++)
+        for (int i = 19; i < 29; i++)
         {
             SetConsoleTextAttribute(hConsole, 14);
             cout << idx << ". " << ALL_CHARACTERS[i] <<' '<< setw(100) << WEBSIDES[i]  << endl;
@@ -1270,7 +1337,7 @@ void ShowCharacterIllustration() {
         }
         SetConsoleTextAttribute(hConsole, 7);
         cout << "【4星】\n";
-        for (int i = 28; i < 33; i++)
+        for (int i = 29; i < 34; i++)
         {
             SetConsoleTextAttribute(hConsole, 13);
             cout << idx << ". " << ALL_CHARACTERS[i] <<' '<< setw(100) << WEBSIDES[i]  << endl;
@@ -1294,6 +1361,13 @@ void ShowCharacterIllustration() {
         string filename = GetImagePath(english);
 
         //更新修改
+        //英文名填 none 表示暂未收录该角色立绘，直接提示而不去打开文件
+        if (english == "none")
+        {
+            cout << "（该角色暂未收录立绘：在 CharacterImages 中添加图片，并在 ENGLISH 里填写对应英文名即可）\n";
+            system("pause");
+            continue;
+        }
         //先检查文件是否真的存在，便于区分“文件不存在”与“无法打开”
         DWORD attr = GetFileAttributesA(filename.c_str());
         if (attr == INVALID_FILE_ATTRIBUTES)
@@ -1331,7 +1405,7 @@ int main()
     do
     {
         system("cls");
-        cout << "终末地抽卡模拟器\n最新终末地版本：1.5\n"
+        cout << "终末地抽卡模拟器\n最新终末地版本：1.5\n预测终末地卡池版本：1.6\n"
              << "输入1，进入抽卡\n"
              << "输入2，查看声明\n"
              << "输入3，查看已获得角色\n"

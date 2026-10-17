@@ -85,8 +85,10 @@ const BannerRow BANNERS[] = {
     {5,  10, L"1.4 向渊行",         L"临渊望北",         L"诀",                            L"2026.7.16~2026.8.9"},
     {5,  11, L"1.4 向渊行",         L"晨星于此闪耀",     L"梨诺",                          L"2026.8.9~2026.9.2"},
     {6,  12, L"1.5 雪凇幽梦",       L"冬猎",             L"提弗洛斯",                      L"2026.9.2~2026.9.30"},
-    {6,  13, L"1.5 雪凇幽梦",       L"绚丽异彩（重构）", L"伊冯",                          L"2026.9.24~2026.10.14"},
-    {7, 999, L"常驻池",             L"基础寻访",         L"（无UP角色）",                  L"永久开放"}
+    {6,  13, L"1.5 雪凇幽梦",       L"绚丽异彩（重构）", L"伊冯",                          L"2026.9.24~2026.10.15"},
+    {7,  14, L"1.6 丹青渡",         L"万物更新",        L"祀",                            L"2026.10.15~2026.11.5"},
+    {7,  15, L"1.6 丹青渡",         L"祖泉的新流",      L"汤汤",                          L"2026.10.29~2026.11.19"},
+    {8, 999, L"常驻池",             L"基础寻访",         L"无UP角色",                      L"永久开放"}
 };
 const int BANNER_COUNT = (int)(sizeof(BANNERS) / sizeof(BANNERS[0]));
 
@@ -608,6 +610,12 @@ LRESULT CALLBACK ArtProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 MessageBoxW(hwnd, L"请先在左侧选择角色。", L"提示", MB_ICONINFORMATION);
                 return 0;
             }
+            //更新修改：介绍页填 none 表示暂未收录
+            if (WEBSIDES[g_artSel] == "none")
+            {
+                MessageBoxW(hwnd, L"该角色暂未收录介绍页：在 WEBSIDES 里补上对应链接即可。", L"提示", MB_ICONINFORMATION);
+                return 0;
+            }
             ShellExecuteW(NULL, L"open", U8(WEBSIDES[g_artSel]).c_str(), NULL, NULL, SW_SHOWNORMAL);
             return 0;
         }
@@ -690,8 +698,8 @@ LRESULT CALLBACK MainProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             672, 38, 476, 690, IDC_RESULT, hwnd);
         SendMessageW(hResult, LB_SETITEMHEIGHT, 0, S(20));
 
-        //版本下拉
-        for (int i = 1; i <= 7; i++)
+        //版本下拉（1~6为正式版本，7为预测版本，8为常驻池）
+        for (int i = 1; i <= 8; i++)
         {
             const wchar_t* name = NULL;
             for (int k = 0; k < BANNER_COUNT; k++)
@@ -907,7 +915,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     RECT r = {0, 0, S(WIN_W), S(WIN_H)};
     AdjustWindowRect(&r, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
-    g_hMain = CreateWindowExW(0, L"EndfieldGachaMain", L"终末地抽卡模拟器（图形界面版） v1.5",
+    g_hMain = CreateWindowExW(0, L"EndfieldGachaMain", L"终末地抽卡模拟器（图形界面版） v1.6",
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT,
         r.right - r.left, r.bottom - r.top, NULL, NULL, hInstance, NULL);
     if (!g_hMain)
